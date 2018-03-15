@@ -1,36 +1,18 @@
 $(document).ready(function(){
-  
+
   // On page load: datatable
-  var table_companies = $('#table_companies').dataTable({
+var table_companies = $('#table_companies').dataTable({
     "ajax": "data.php?job=get_companies",
     "columns": [
-      { "data": "rank" },
-      { "data": "company_name",   "sClass": "company_name" },
-      { "data": "industries" },
-      { "data": "revenue",        "sClass": "integer" },
-      { "data": "fiscal_year",    "sClass": "integer" },
-      { "data": "employees",      "sClass": "integer" },
-      { "data": "market_cap",     "sClass": "integer" },
-      { "data": "headquarters" },
+      { "data": "serial" },
+      { "data": "name"},
+      { "data": "id" },
+      { "data": "course"},
+      { "data": "date"},
       { "data": "functions",      "sClass": "functions" }
-    ],
-    "aoColumnDefs": [
-      { "bSortable": false, "aTargets": [-1] }
-    ],
-    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-    "oLanguage": {
-      "oPaginate": {
-        "sFirst":       " ",
-        "sPrevious":    " ",
-        "sNext":        " ",
-        "sLast":        " ",
-      },
-      "sLengthMenu":    "Records per page: _MENU_",
-      "sInfo":          "Total of _TOTAL_ records (showing _START_ to _END_)",
-      "sInfoFiltered":  "(filtered from _MAX_ total records)"
-    }
+    ]
   });
-  
+
   // On page load: form validation
   jQuery.validator.setDefaults({
     success: 'valid',
@@ -104,7 +86,7 @@ $(document).ready(function(){
       hide_lightbox();
     }
   });
-  
+
   // Hide iPad keyboard
   function hide_ipad_keyboard(){
     document.activeElement.blur();
@@ -120,14 +102,10 @@ $(document).ready(function(){
     $('#form_company').attr('data-id', '');
     $('#form_company .field_container label.error').hide();
     $('#form_company .field_container').removeClass('valid').removeClass('error');
-    $('#form_company #rank').val('');
-    $('#form_company #company_name').val('');
-    $('#form_company #industries').val('');
-    $('#form_company #revenue').val('');
-    $('#form_company #fiscal_year').val('');
-    $('#form_company #employees').val('');
-    $('#form_company #market_cap').val('');
-    $('#form_company #headquarters').val('');
+    $('#form_company #name').val('');
+    $('#form_company #id').val('');
+    $('#form_company #course').val('');
+    $('#form_company #date').val('');
     show_lightbox();
   });
 
@@ -154,8 +132,8 @@ $(document).ready(function(){
           // Reload datable
           table_companies.api().ajax.reload(function(){
             hide_loading_message();
-            var company_name = $('#company_name').val();
-            show_message("Company '" + company_name + "' added successfully.", 'success');
+            var name = $('#name').val();
+            show_message("Certificate of '" + name + "' added successfully.", 'success');
           }, true);
         } else {
           hide_loading_message();
@@ -191,14 +169,10 @@ $(document).ready(function(){
         $('#form_company').attr('data-id', id);
         $('#form_company .field_container label.error').hide();
         $('#form_company .field_container').removeClass('valid').removeClass('error');
-        $('#form_company #rank').val(output.data[0].rank);
-        $('#form_company #company_name').val(output.data[0].company_name);
-        $('#form_company #industries').val(output.data[0].industries);
-        $('#form_company #revenue').val(output.data[0].revenue);
-        $('#form_company #fiscal_year').val(output.data[0].fiscal_year);
-        $('#form_company #employees').val(output.data[0].employees);
-        $('#form_company #market_cap').val(output.data[0].market_cap);
-        $('#form_company #headquarters').val(output.data[0].headquarters);
+        $('#form_company #name').val(output.data[0].name);
+        $('#form_company #id').val(output.data[0].id);
+        $('#form_company #course').val(output.data[0].course);
+        $('#form_company #date').val(output.data[0].date);
         hide_loading_message();
         show_lightbox();
       } else {
@@ -211,7 +185,7 @@ $(document).ready(function(){
       show_message('Information request failed: ' + textStatus, 'error');
     });
   });
-  
+
   // Edit company submit form
   $(document).on('submit', '#form_company.edit', function(e){
     e.preventDefault();
@@ -236,8 +210,8 @@ $(document).ready(function(){
           // Reload datable
           table_companies.api().ajax.reload(function(){
             hide_loading_message();
-            var company_name = $('#company_name').val();
-            show_message("Company '" + company_name + "' edited successfully.", 'success');
+            var name = $('#name').val();
+            show_message("Certificate of '" + name + "' edited successfully.", 'success');
           }, true);
         } else {
           hide_loading_message();
@@ -250,12 +224,12 @@ $(document).ready(function(){
       });
     }
   });
-  
+
   // Delete company
   $(document).on('click', '.function_delete a', function(e){
     e.preventDefault();
-    var company_name = $(this).data('name');
-    if (confirm("Are you sure you want to delete '" + company_name + "'?")){
+    var name = $(this).data('name');
+    if (confirm("Are you sure you want to delete '" + name + "'?")){
       show_loading_message();
       var id      = $(this).data('id');
       var request = $.ajax({
@@ -270,7 +244,7 @@ $(document).ready(function(){
           // Reload datable
           table_companies.api().ajax.reload(function(){
             hide_loading_message();
-            show_message("Company '" + company_name + "' deleted successfully.", 'success');
+            show_message("Certificate of '" + name + "' deleted successfully.", 'success');
           }, true);
         } else {
           hide_loading_message();

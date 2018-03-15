@@ -1,4 +1,12 @@
 <?php
+// Database details
+/*
+$db_server   = '127.0.0.1';
+$db_username = 'root';
+$db_password = 'noble555666888';
+$db_name     = 'certificates';
+*/
+
 // Get job (and id)
 $job = '';
 $id  = '';
@@ -26,7 +34,13 @@ $mysql_data = array();
 // Valid job found
 if ($job != ''){
 
-  // Connect to database using PDO
+  // Connect to database
+  $db_connection = mysqli_connect($db_server, $db_username, $db_password, $db_name);
+  if (mysqli_connect_errno()){
+    $result  = 'error';
+    $message = 'Failed to connect to database: ' . mysqli_connect_error();
+    $job     = '';
+  }
   try {
     $db_connection = new PDO('mysql:host=127.0.0.1;dbname=certificates', 'root', 'noble555666888');
 
@@ -35,22 +49,22 @@ if ($job != ''){
     $message = 'Failed to connect to database: ' . mysqli_connect_error();
     $job     = '';
   };
-  $db_connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+  $dbConnect->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
   // Execute job
   if ($job == 'get_companies'){
 
     // Get companies
-    $query = 'SELECT * FROM issuedCert ORDER BY serial ASC';
-    $query = $db_connection->prepare($query);
-    $query->execute();
+    $query = "SELECT * FROM issuedCert";
+    $query = mysqli_query($db_connection, $query);
     if (!$query){
       $result  = 'error';
       $message = 'query error';
     } else {
       $result  = 'success';
       $message = 'query success';
-      while ($company = $query->fetch()){
+      while ($company = mysqli_fetch_array($query)){
         $functions  = '<div class="function_buttons"><ul>';
         $functions .= '<li class="function_edit"><a data-id="'   . $company['id'] . '" data-name="' . $company['name'] . '"><span>Edit</span></a></li>';
         $functions .= '<li class="function_delete"><a data-id="' . $company['id'] . '" data-name="' . $company['name'] . '"><span>Delete</span></a></li>';
@@ -73,24 +87,21 @@ if ($job != ''){
       $result  = 'error';
       $message = 'id missing';
     } else {
-      $query = "SELECT * FROM issuedCert WHERE id = :id";
-      $query = $db_connection->prepare($query);
-      $params = [
-        'id' => $_GET['id']
-      ];
-      $query->execute($params);
+      $query = "SELECT * FROM issuedCert WHERE id = '" . mysqli_real_escape_string($db_connection, $id) . "'";
+      $query = mysqli_query($db_connection, $query);
       if (!$query){
         $result  = 'error';
         $message = 'query error';
       } else {
         $result  = 'success';
         $message = 'query success';
-        while ($row = $query->fetch()){
+        while ($company = mysqli_fetch_array($query)){
           $mysql_data[] = array(
-            "name"  => $row['name'],
-            "id"    => $row['id'],
-            "course"       => $row['course'],
-            "date"   => $row['date']
+            "serial"          => $company['serial'],
+            "name"  => $company['name'],
+            "id"    => $company['id'],
+            "course"       => $company['course'],
+            "date"   => $company['date']
           );
         }
       }
@@ -126,15 +137,13 @@ if ($job != ''){
       $result  = 'error';
       $message = 'id missing';
     } else {
-      $query = "UPDATE issuedCert SET name = :name, id = :id, course = :course, date = :date WHERE id = :id";
-      $query = $db_connection->prepare($query);
-      $params = [
-        'name' => $_GET['name'],
-        'id' => $_GET['id'],
-        'course' => $_GET['course'],
-        'date' => $_GET['date']
-      ];
-      $query->execute($params);
+      $query = "UPDATE issuedCert SET ";
+      if (isset($_GET['name']))         { $query .= "name         = '" . mysqli_real_escape_string($db_connection, $_GET['name'])         . "', "; }
+      if (isset($_GET['id'])) { $query .= "id = '" . mysqli_real_escape_string($db_connection, $_GET['id']) . "', "; }
+      if (isset($_GET['course']))   { $query .= "course   = '" . mysqli_real_escape_string($db_connection, $_GET['course'])   . "', "; }
+      if (isset($_GET['date']))      { $query .= "date      = '" . mysqli_real_escape_string($db_connection, $_GET['date'])      . "', "; }
+      $query .= "WHERE id = '" . mysqli_real_escape_string($db_connection, $id) . "'";
+      $query  = mysqli_query($db_connection, $query);
       if (!$query){
         $result  = 'error';
         $message = 'query error';
@@ -151,12 +160,8 @@ if ($job != ''){
       $result  = 'error';
       $message = 'id missing';
     } else {
-      $query = "DELETE FROM issuedCert WHERE id = :id";
-      $query = $db_connection->prepare($query);
-      $params = [
-        'id' => $_GET['id']
-      ];
-      $query->execute($params);
+      $query = "DELETE FROM issuedCert WHERE id = '" . mysqli_real_escape_string($db_connection, $id) . "'";
+      $query = mysqli_query($db_connection, $query);
       if (!$query){
         $result  = 'error';
         $message = 'query error';
@@ -167,6 +172,9 @@ if ($job != ''){
     }
 
   }
+
+  // Close database connection
+  mysqli_close($db_connection);
 
 }
 
@@ -181,3 +189,4 @@ $data = array(
 $json_data = json_encode($data);
 print $json_data;
 ?>
+
