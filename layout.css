@@ -314,7 +314,7 @@ table.datatable tbody tr:hover td {
 table.datatable tbody tr:hover td.dataTables_empty {
   background-color: #fff;
 }
-table.datatable tbody td.company_name {
+table.datatable tbody td.certificate_name {
   width: 100%;
 }
 table.datatable tbody td.integer {

@@ -19,27 +19,21 @@ if (isset($_GET['job'])){
     $job = '';
   }
 }
-
 // Prepare array
 $mysql_data = array();
-
 // Valid job found
 if ($job != ''){
-
   // Connect to database using PDO
   try {
     $db_connection = new PDO('mysql:host=127.0.0.1;dbname=certificates', 'root', 'noble555666888');
-
   } catch (PDOException $e) {
     $result  = 'error';
     $message = 'Failed to connect to database: ' . mysqli_connect_error();
     $job     = '';
   };
   $db_connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
   // Execute job
   if ($job == 'get_companies'){
-
     // Get companies
     $query = 'SELECT * FROM issuedCert ORDER BY serial ASC';
     $query = $db_connection->prepare($query);
@@ -65,9 +59,7 @@ if ($job != ''){
         );
       }
     }
-
   } elseif ($job == 'get_company'){
-
     // Get company
     if ($id == ''){
       $result  = 'error';
@@ -95,12 +87,9 @@ if ($job != ''){
         }
       }
     }
-
   } elseif ($job == 'add_company'){
-
     // Add company
     $query = 'INSERT INTO issuedCert (name, id, course, date) VALUES (:name, :id, :course, :date)';
-
     $statement = $db_connection->prepare($query);
     $params = [
       'name' => $_GET['name'],
@@ -108,9 +97,7 @@ if ($job != ''){
       'course' => $_GET['course'],
       'date' => $_GET['date']
     ];
-
     $statement->execute($params);
-
     if (!$statement){
       $result  = 'error';
       $message = 'query error';
@@ -118,9 +105,7 @@ if ($job != ''){
       $result  = 'success';
       $message = 'query success';
     }
-
   } elseif ($job == 'edit_company'){
-
     // Edit company
     if ($id == ''){
       $result  = 'error';
@@ -143,9 +128,7 @@ if ($job != ''){
         $message = 'query success';
       }
     }
-
   } elseif ($job == 'delete_company'){
-
     // Delete company
     if ($id == ''){
       $result  = 'error';
@@ -165,18 +148,14 @@ if ($job != ''){
         $message = 'query success';
       }
     }
-
   }
-
 }
-
 // Prepare data
 $data = array(
   "result"  => $result,
   "message" => $message,
   "data"    => $mysql_data
 );
-
 // Convert PHP array to JSON array
 $json_data = json_encode($data);
 print $json_data;

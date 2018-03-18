@@ -17,10 +17,13 @@ var table_companies = $('#table_companies').dataTable({
   jQuery.validator.setDefaults({
     success: 'valid',
     rules: {
-      fiscal_year: {
-        required: true,
-        min:      2000,
-        max:      2025
+      id: {
+        remote: 'validate.php'
+      }
+    },
+    messages: {
+      id: {
+        remote: 'ID is already assigned'
       }
     },
     errorPlacement: function(error, element){
@@ -96,8 +99,8 @@ var table_companies = $('#table_companies').dataTable({
   // Add company button
   $(document).on('click', '#add_company', function(e){
     e.preventDefault();
-    $('.lightbox_content h2').text('Add company');
-    $('#form_company button').text('Add company');
+    $('.lightbox_content h2').text('Add Certificate');
+    $('#form_company button').text('Add Certificate');
     $('#form_company').attr('class', 'form add');
     $('#form_company').attr('data-id', '');
     $('#form_company .field_container label.error').hide();
