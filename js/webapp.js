@@ -2,7 +2,7 @@ $(document).ready(function(){
 
   // On page load: datatable
 var table_companies = $('#table_companies').dataTable({
-    "ajax": "data.php?job=get_companies",
+    "ajax": "../controllers/data.php?job=get_companies",
     "columns": [
       { "data": "serial" },
       { "data": "name"},
